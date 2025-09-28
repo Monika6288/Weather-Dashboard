@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dynamic Weather Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Link external CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 min-h-screen p-6 font-sans text-gray-900">
+  <div class="w-full md:w-1/2 mx-auto bg-white/85 backdrop-blur-sm rounded-2xl shadow-xl p-6 relative">
+    <h1 class="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      Dynamic Weather Dashboard
+    </h1>
+
+    <button id="themeToggle" class="absolute top-4 right-4 px-4 py-2 rounded-lg bg-yellow-400">🌙 Toggle</button>
+
+    <form id="searchForm" class="flex mb-6 max-w-md mx-auto gap-2">
+      <input
+        id="cityInput"
+        type="text"
+        placeholder="🌍 Enter city name"
+        class="flex-grow px-4 py-3 border-2 border-blue-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400"
+        required
+      />
+      <button
+        type="submit"
+        class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg"
+      >
+        🔍 Get Weather
+      </button>
+    </form>
+
+    <img src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png"
+     class="absolute top-10 left-10 w-16 opacity-40 animate-bounce" alt="cloud" />
+    <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png"
+     class="absolute bottom-10 right-10 w-20 opacity-40 animate-spin-slow" alt="sun" />
+
+    <div id="error" class="text-red-700 bg-red-100 border border-red-300 rounded-xl p-4 mb-6 hidden"></div>
+
+    <div id="weather" class="space-y-6 hidden">
+      <!-- Current weather & units toggle -->
+      <div class="flex justify-between items-center bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl">
+        <h2 id="location" class="text-2xl font-bold flex items-center gap-2">📍 Location</h2>
+        <button id="toggleUnits" class="bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-xl text-sm hover:from-blue-500 hover:to-purple-600 transition transform hover:scale-105 shadow-md">
+          🔄 Switch to °F
+        </button>
+      </div>
+
+      <!-- Temperature chart -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 mt-6">
+        <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">📈 Temperature Trend</h3>
+        <canvas id="tempChart"></canvas>
+      </div>
+
+      <!-- Weather details -->
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+          <div class="flex items-center mb-6 md:mb-0 gap-4">
+            <img id="weatherIcon" src="" alt="Weather Icon" class="w-28 h-28 animate-pulse" />
+            <div>
+              <div id="temp" class="text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">--°C</div>
+              <div id="description" class="text-xl text-gray-700 capitalize font-medium">--</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6 w-full max-w-md">
+            <div class="text-center p-4 bg-blue-50 rounded-xl">
+              <div class="text-blue-600 mb-2">🌡️ Feels like</div>
+              <div id="feelsLike" class="font-bold text-xl text-blue-800">--°</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-xl">
+              <div class="text-green-600 mb-2">💧 Humidity</div>
+              <div id="humidity" class="font-bold text-xl text-green-800">--%</div>
+            </div>
+            <div class="text-center p-4 bg-yellow-50 rounded-xl">
+              <div class="text-yellow-600 mb-2">💨 Wind</div>
+              <div id="wind" class="font-bold text-xl text-yellow-800">-- m/s</div>
+            </div>
+            <div class="text-center p-4 bg-purple-50 rounded-xl">
+              <div class="text-purple-600 mb-2">📊 Pressure</div>
+              <div id="pressure" class="font-bold text-xl text-purple-800">-- hPa</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-12 mt-8 pt-6 border-t border-gray-200">
+          <div class="text-center">
+            <div class="text-orange-500 text-lg mb-2">🌅 Sunrise</div>
+            <div id="sunrise" class="font-bold text-xl text-orange-700">--:--</div>
+          </div>
+          <div class="text-center">
+            <div class="text-purple-500 text-lg mb-2">🌇 Sunset</div>
+            <div id="sunset" class="font-bold text-xl text-purple-700">--:--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast -->
+      <div id="forecast" class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 mt-6">
+        <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">📅 5-Day Forecast</h3>
+        <div id="forecastContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link external JS -->
+  <script src="script.js"></script>
+</body>
+</html>

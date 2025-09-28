@@ -1,0 +1,4 @@
+/* Custom slow spin animation for the sun icon */
+.animate-spin-slow {
+  animation: spin 10s linear infinite;
+}
